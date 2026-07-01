@@ -48,7 +48,8 @@ body{display:flex;align-items:center;justify-content:center;background:#0c1416;f
 .cueline{display:flex;align-items:baseline;gap:12px;transform:translateY(-23px)}
 .cueword{font-size:38px;font-weight:500;color:var(--ink)}.count{font-size:38px;font-weight:600;color:var(--ink)}
 .cuewrap{flex:1;display:flex;align-items:center;justify-content:center;padding:0 22px}
-.stage{flex:1.7;position:relative;display:flex;align-items:center;justify-content:center;overflow:visible}
+.stage{flex:1.7;position:relative;display:flex;align-items:center;justify-content:center;overflow:visible;transition:transform .38s cubic-bezier(.4,0,.2,1)}
+.app.nocue .cueline{display:none}
 
 
 .swipe{flex:0 0 auto;display:flex;gap:7px;justify-content:center;padding:6px 0 14px}
@@ -275,6 +276,7 @@ body{display:flex;align-items:center;justify-content:center;background:#0c1416;f
       <div class="grp">Display</div>
       <div class="card2">
         <div class="row"><div class="rlabel">Theme</div><div class="seg" id="segTheme"><button data-dark="0">Light</button><button data-dark="1">Dark</button></div></div>
+        <div class="row"><div class="rlabel">Show breathing cue</div><div class="switch on" id="swCue"><span class="knob"></span></div></div>
         <div class="row"><div class="rlabel">Show heart rate</div><div class="switch on" id="swHR"><span class="knob"></span></div></div>
         <div class="row"><div class="rlabel">Show blood oxygen (SpO&#8322;)</div><div class="switch on" id="swSpO2"><span class="knob"></span></div></div>
       </div>
@@ -603,8 +605,21 @@ requestAnimationFrame(frame);
  link(document.getElementById('audioBtn'),document.getElementById('swAudio'));
  link(document.getElementById('voiceBtn'),document.getElementById('swVoice'));
  function vital(sw,el){ if(!sw||!el) return; function apply(){ el.style.display=sw.classList.contains('on')?'':'none'; } sw.addEventListener('click',function(){ sw.classList.toggle('on'); apply(); }); apply(); }
- vital(document.getElementById('swHR'),document.getElementById('vHR'));
- vital(document.getElementById('swSpO2'),document.getElementById('vSpO2'));
+ var swHR=document.getElementById('swHR'),swSpO2=document.getElementById('swSpO2'),swCue=document.getElementById('swCue');
+ vital(swHR,document.getElementById('vHR'));
+ vital(swSpO2,document.getElementById('vSpO2'));
+ var stEl=document.getElementById('stage'),vitEl=document.querySelector('.vitline'),cueEl=document.querySelector('.cueline'),vBtn=document.getElementById('voiceBtn'),hdrEl=document.querySelector('.hdr'),f0=0.68;
+ function shown(sw){return !sw||sw.classList.contains('on');}
+ function recenter(){ if(!stEl||!vBtn||!vitEl)return; var cueOn=shown(swCue),hrOn=shown(swHR),spOn=shown(swSpO2); var natC=stEl.offsetTop+stEl.offsetHeight/2, btnTop=vBtn.offsetTop; var cueBot=cueEl?cueEl.offsetTop+cueEl.offsetHeight-23:natC; if(cueOn){ var d=btnTop-cueBot; if(d>40)f0=Math.min(0.85,Math.max(0.45,(natC-cueBot)/d)); stEl.style.transform=''; return; } var anchor=(hrOn||spOn)?(vitEl.offsetTop+vitEl.offsetHeight):(hdrEl?hdrEl.offsetTop+hdrEl.offsetHeight:vitEl.offsetTop); var shift=Math.round(anchor+f0*(btnTop-anchor)-natC); stEl.style.transform=shift?'translateY('+shift+'px)':''; }
+ function cueClass(){ if(app&&swCue)app.classList.toggle('nocue',!swCue.classList.contains('on')); }
+ if(swCue)swCue.addEventListener('click',function(){swCue.classList.toggle('on');cueClass();requestAnimationFrame(recenter);});
+ if(swHR)swHR.addEventListener('click',function(){requestAnimationFrame(recenter);});
+ if(swSpO2)swSpO2.addEventListener('click',function(){requestAnimationFrame(recenter);});
+ cueClass();
+ if(app)new MutationObserver(function(){requestAnimationFrame(recenter);}).observe(app,{attributes:true,attributeFilter:['data-anim']});
+ window.addEventListener('resize',function(){requestAnimationFrame(recenter);});
+ window.addEventListener('orientationchange',function(){setTimeout(recenter,60);});
+ requestAnimationFrame(recenter);
 })();
 
 (function(){var c=document.getElementById('chat');if(!c)return;var cb=document.getElementById('chatBtn');if(cb)cb.onclick=function(){c.classList.add('show');};var bk=c.querySelector('.back');if(bk)bk.onclick=function(){c.classList.remove('show');};var hb=document.getElementById('homeBtn');if(hb)hb.addEventListener('click',function(){c.classList.remove('show');});var msgs=document.getElementById('cmsgs'),inp=document.getElementById('cinput');var reps=["Thank you for telling me. Let's breathe through it together \u2014 in for 4, and a longer out for 6.","That's completely okay. Rest a hand on your chest and just feel it rise and fall.","You're safe right now. Look around and name five things you can see.","Let's lengthen the out-breath a little more \u2014 slow, gentle, all the way out."],ri=0;function add(t,who){var d=document.createElement('div');d.className='b '+who;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}function send(){var t=inp.value.trim();if(!t)return;add(t,'me');inp.value='';setTimeout(function(){add(reps[ri%reps.length],'ai');ri++;},700);}var sd=document.getElementById('csend');if(sd)sd.onclick=send;if(inp)inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();send();}});var au=document.getElementById('caudio');if(au)au.onclick=function(){au.classList.toggle('on');};var mc=document.getElementById('cmic');if(mc)mc.onclick=function(){mc.classList.toggle('on');};})();
