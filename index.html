@@ -15,7 +15,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
 body{display:flex;align-items:center;justify-content:center;background:#0c1416;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-.app{position:relative;width:min(440px,100vw);height:min(920px,100dvh);overflow:hidden;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);transition:background .35s,color .35s;clip-path:inset(0 round 34px)}
+.app{position:relative;width:min(440px,100vw);height:min(920px,100dvh);--vh:min(920px,100dvh);overflow:hidden;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);transition:background .35s,color .35s;clip-path:inset(0 round 34px)}
 .app[data-theme="lotus"]{--acc:#ec72aa;--cic:#ffffff;--bg:#eef3f5;--ink:#3f5560;--mut:#7089a3}
 .app[data-theme="lotus"].alt{--bg:#141a1e;--ink:#dfeaef;--mut:#8aa0ad}
 .app[data-theme="orb"]{--acc:#16e0c0;--cic:#06281f;--bg:#0c1420;--ink:#eaf4f2;--mut:#7c93a6}
@@ -154,7 +154,7 @@ body{display:flex;align-items:center;justify-content:center;background:#0c1416;f
 .scroll::-webkit-scrollbar{width:6px}
 .scroll::-webkit-scrollbar-track{background:transparent}
 .scroll::-webkit-scrollbar-thumb{background:var(--mut);background:color-mix(in srgb,var(--mut) 55%,transparent);border-radius:3px}
-@media (max-width:480px),(display-mode:standalone){.app{width:100vw;height:100dvh;border-radius:0;box-shadow:none;clip-path:none}.floatbtn.left{left:calc(100vw/3 - 6.33px)}.floatbtn.right{right:calc(100vw/3 - 6.33px)}}
+@media (max-width:480px),(display-mode:standalone){.app{width:100vw;height:100dvh;--vh:100dvh;border-radius:0;box-shadow:none;clip-path:none}.floatbtn.left{left:calc(100vw/3 - 6.33px)}.floatbtn.right{right:calc(100vw/3 - 6.33px)}}
 .menu{position:relative}
 
 .cmedia{position:relative;display:block;width:fit-content;max-width:80%}
@@ -459,7 +459,7 @@ const ANIMS=[
  {key:"count",html:`<div class="gbox">
     <svg width="100%" height="100%" viewBox="0 0 200 200">
       <rect class="sqedge" x="42" y="42" width="116" height="116" rx="10" fill="none" stroke-width="3"/>
-      <text class="cueword" x="100" y="94" text-anchor="middle">Breathe in</text><text class="countval" x="100" y="120" text-anchor="middle">4</text><circle id="dot" cx="42" cy="158" r="9" fill="#38e1c6"/>
+      <circle id="dot" cx="42" cy="158" r="9" fill="#38e1c6"/>
     </svg>
     
   </div>`,css:`.gbox{width:min(82vw,340px,34dvh);height:min(82vw,340px,34dvh);position:relative;display:flex;align-items:center;justify-content:center;transform:translateY(calc(-30% - 10.4dvh + 50.6px)) scale(1.232)}
@@ -470,7 +470,7 @@ const ANIMS=[
 .gbox .cueword{font-size:15px;font-weight:600;fill:var(--ink)}
 .gbox .countval{font-size:13px;font-weight:600;fill:var(--ink)}
 .floatbtn{bottom:calc(123px + env(safe-area-inset-bottom))}`,make:function(stage){var dot=stage.querySelector('#dot');var A=[42,158],B=[42,42],C=[158,42],D=[158,158];function pos(i,p){var seg=[[A,B],[B,C],[C,D],[D,A]][i];return[seg[0][0]+(seg[1][0]-seg[0][0])*p,seg[0][1]+(seg[1][1]-seg[0][1])*p];}return function(e,i,p){var q=pos(i,p);dot.setAttribute('cx',q[0].toFixed(1));dot.setAttribute('cy',q[1].toFixed(1));};}},
- {key:"pebble",html:`<div class="gbox"><div class="squircle" id="box"></div><div class="cuetext"><span class="cueword">Breathe in</span><span class="countval">4</span></div></div>`,css:`.gbox{width:min(82vw,340px,34dvh);height:min(82vw,340px,34dvh);position:relative;display:flex;align-items:center;justify-content:center;transform:translateY(calc(-30% - 10.4dvh + 50.6px)) scale(1.232)}
+ {key:"pebble",html:`<div class="gbox"><div class="squircle" id="box"></div></div>`,css:`.gbox{width:min(82vw,340px,calc(var(--vh)*.34));height:min(82vw,340px,calc(var(--vh)*.34));position:relative;display:flex;align-items:center;justify-content:center;transform:translateY(calc(-30% - var(--vh)*.104 + 50.6px)) scale(1.232)}
 .squircle{width:58%;height:58%;border-radius:30px;border:2px solid var(--acc);background:rgba(139,124,246,.08);display:flex;align-items:center;justify-content:center;will-change:transform}
 .squircle .gcount{font-size:50px;font-weight:600;color:var(--ink)}
 .cuetext{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;pointer-events:none}
